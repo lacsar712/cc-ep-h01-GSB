@@ -110,8 +110,9 @@ def _apply_event_to_projection(proj: RunProjection | None, event: EventStore) ->
         )
         proj.artifacts_json = artifacts
     elif event.event_type == "RunCompleted":
-        from app.CompleteProjectionBypass import CompleteProjectionBypass
-        CompleteProjectionBypass.apply_completed_fields(proj, payload, event.occurred_at)
+        proj.status = "completed"
+        proj.result_summary = payload["result_summary"]
+        proj.finished_at = event.occurred_at
     elif event.event_type == "RunAborted":
         proj.status = "aborted"
         proj.abort_reason = payload["reason"]
