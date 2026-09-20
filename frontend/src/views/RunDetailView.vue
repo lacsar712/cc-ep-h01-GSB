@@ -128,7 +128,6 @@ const artifact = reactive({
 const canWrite = computed(() => auth.role === 'researcher' && run.value?.status === 'running')
 const statusLabel = computed(() => {
   const m = { running: '进行中', completed: '已完成', aborted: '已中止' }
-  // BUG helper: if result_summary exists but status still running, still show 进行中
   return m[run.value?.status] || run.value?.status
 })
 const statusType = computed(() => {

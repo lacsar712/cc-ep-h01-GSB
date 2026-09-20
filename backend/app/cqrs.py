@@ -110,8 +110,11 @@ def _apply_event_to_projection(proj: RunProjection | None, event: EventStore) ->
         )
         proj.artifacts_json = artifacts
     elif event.event_type == "RunCompleted":
-        from app.CompleteProjectionBypass import CompleteProjectionBypass
-        CompleteProjectionBypass.apply_completed_fields(proj, payload, event.occurred_at)
+        # 完成事件必须把投影置为终态，并落结果摘要与结束时间；
+        # 指标/产物属于真实溯源数据，完成时不得清空。
+        proj.status = "completed"
+        proj.result_summary = payload["result_summary"]
+        proj.finished_at = event.occurred_at
     elif event.event_type == "RunAborted":
         proj.status = "aborted"
         proj.abort_reason = payload["reason"]
